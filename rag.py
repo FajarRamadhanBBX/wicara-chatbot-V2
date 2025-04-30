@@ -1,5 +1,4 @@
 from langchain_core.prompts import PromptTemplate
-from langchain_community.llms.ctransformers import CTransformers
 from langchain_community.embeddings import SentenceTransformerEmbeddings
 from langchain_qdrant.vectorstores import Qdrant
 from qdrant_client import QdrantClient
@@ -8,31 +7,13 @@ from fastapi.responses import HTMLResponse
 from fastapi.staticfiles import StaticFiles
 from fastapi.templating import Jinja2Templates
 from fastapi.encoders import jsonable_encoder
-from reranking import rerank_documents
+from function.reranking import rerank_documents
+from function.answer_prompt import answer_prompt
 import os
 
 app = FastAPI()
 app.mount("/static", StaticFiles(directory="static"), name="static")
 templates = Jinja2Templates(directory="templates")
-local_llm = "static/model/meditron-7b.Q4_K_M.gguf"
-
-# bisa diubah
-config = {
-    'max_new_tokens': 1024,
-    'context_length': 2048,
-    'repetition_penalty': 1.1,
-    'temperature': 0.1,
-    'top_k': 50,
-    'top_p': 0.9,
-    'stream': True,
-    'threads': int(os.cpu_count() / 2)
-}
-
-llm = CTransformers(
-    model=local_llm,
-    model_type="llama",
-    **config
-)
 
 prompt_template = """You are an experienced psychologist specializing in helping people overcome glossophobia (the fear of public speaking). 
 Please answer the following question in a warm, casual, and encouraging tone, using everyday language. Avoid technical or overly academic terms.
@@ -69,10 +50,8 @@ async def get_response(query: str = Form(...)):
     best_doc = best_doc[0]
     context = best_doc.page_content
 
-    print("\nContext:\n", context)
     final_prompt = prompt.format(question=query, context=context)
-    response = llm(final_prompt)
-    print("\nResponse:\n", response)
+    response = answer_prompt(final_prompt)
     response = jsonable_encoder(response)
 
     return response

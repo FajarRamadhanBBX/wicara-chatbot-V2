@@ -5,7 +5,7 @@ from langchain_community.embeddings import SentenceTransformerEmbeddings
 from langchain_community.vectorstores import Qdrant
 from langchain_community.document_loaders import DirectoryLoader
 from langchain_community.document_loaders import PyPDFLoader
-from preprocessing import filter_documents
+from function.preprocessing import filter_documents
 
 ## Model embedding yang digunakan
 embedding = SentenceTransformerEmbeddings(model_name="NeuML/pubmedbert-base-embeddings")

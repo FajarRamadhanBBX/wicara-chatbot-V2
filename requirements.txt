@@ -1,0 +1,11 @@
+torch
+sentence_transformers
+transformers 
+langchain
+fastapi
+uvicorn
+jinja2
+qdrant-client
+ctransformers
+python-multipart
+aiofiles

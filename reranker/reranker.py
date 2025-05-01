@@ -1,9 +1,9 @@
 from langchain.schema import Document
 from sentence_transformers import CrossEncoder
 
-reranker = CrossEncoder("cross-encoder/ms-marco-MiniLM-L-6-v2")
+llm_reranker = CrossEncoder("cross-encoder/ms-marco-MiniLM-L-6-v2")
 
-def rerank_documents(query, documents, llm=reranker) -> list[Document]:
+def best_documents(query, documents, llm=llm_reranker) -> list[Document]:
     """
     Rerank documents based on their relevance to the query using LLM.
     """
@@ -11,7 +11,7 @@ def rerank_documents(query, documents, llm=reranker) -> list[Document]:
     for doc in documents:
         pairs.append((query, doc.page_content))
         
-    score = reranker.predict(pairs)
+    score = llm.predict(pairs)
     score_with_document = zip(score, documents)
     scored_documents = sorted(score_with_document, key=lambda x: x[0], reverse=True)
     scored_documents = [doc for _, doc in scored_documents]

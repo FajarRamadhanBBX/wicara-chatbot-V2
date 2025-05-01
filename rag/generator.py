@@ -1,4 +1,4 @@
-from openai import OpenAI, api_key
+from openai import OpenAI
 from dotenv import load_dotenv
 import os
 from fastapi.encoders import jsonable_encoder
